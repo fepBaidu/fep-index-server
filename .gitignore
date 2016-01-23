@@ -1,4 +1,4 @@
 node_modules/
 webapp/
-public/
-views/
+public/script/build
+views/build
