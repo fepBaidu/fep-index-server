@@ -1,4 +1,5 @@
-exports.index = function(req, res){
+var session = require("../scripts/session.js");
 
-	res.render('./build/index', {content : 'Hello Index'});
+exports.index = function(req, res){
+	session.login('./build/index', {movePosition : 0}, req, res);
 };

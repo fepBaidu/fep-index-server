@@ -6,6 +6,13 @@
   	"express": "",
     "ejs" : "*",
     "sequelize" : "",
-    "mysql" : ""
+    "mysql" : "",
+    "md5" : "",
+    "body-parser" : "",
+    "multer" : "",
+    "cookie-parser" : "",
+    "ueditor" : "",
+    "express-session" : "",
+    "formidable" : "latest"
   }
 }

@@ -1,75 +1,57 @@
-webpackJsonp([0,2,3],[
+webpackJsonp([1,5,6,7,8,9],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var _articleCall = __webpack_require__(2);
+	__webpack_require__(14);
 
-	var _articleCall2 = _interopRequireDefault(_articleCall);
+	var _earth = __webpack_require__(11);
 
-	__webpack_require__(3);
+	var _earth2 = _interopRequireDefault(_earth);
+
+	var _navigatorController = __webpack_require__(12);
+
+	var _navigatorController2 = _interopRequireDefault(_navigatorController);
+
+	var _loginController = __webpack_require__(13);
+
+	var _loginController2 = _interopRequireDefault(_loginController);
+
+	var _articleController = __webpack_require__(16);
+
+	var _articleController2 = _interopRequireDefault(_articleController);
+
+	var _articleService = __webpack_require__(17);
+
+	var _articleService2 = _interopRequireDefault(_articleService);
+
+	var _articleDirective = __webpack_require__(18);
+
+	var _articleDirective2 = _interopRequireDefault(_articleDirective);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	console.log(_articleCall2.default);
+	_earth2.default.init(100, 100, 'images/sphere.png');
+	_earth2.default.animate();
+
+	var articleApp = angular.module('article', []);
+	_navigatorController2.default.init(articleApp);
+	_loginController2.default.init(articleApp);
+	_articleController2.default.init(articleApp);
+	_articleService2.default.init(articleApp);
+	_articleDirective2.default.init(articleApp);
 
 /***/ },
 /* 1 */,
-/* 2 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var content = "It works in articleall.js";
-
-	exports.default = content;
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(4);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(6)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(true) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept(4, function() {
-				var newContent = __webpack_require__(4);
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(5)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "#content {\n  color: red;\n}\nbody {\n  background: #fcfcfc;\n}\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 5 */
+/* 2 */,
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */
 /***/ function(module, exports) {
 
 	/*
@@ -125,7 +107,7 @@ webpackJsonp([0,2,3],[
 
 
 /***/ },
-/* 6 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -377,6 +359,305 @@ webpackJsonp([0,2,3],[
 			URL.revokeObjectURL(oldSrc);
 	}
 
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var container;
+	var camera, scene, renderer;
+	var group;
+	var mouseX = 0,
+	    mouseY = 0;
+
+	var windowHalfX;
+	var windowHalfY;
+
+	function init(w, h, imgSrc) {
+
+		windowHalfX = w / 2;
+		windowHalfY = h / 2;
+
+		container = document.getElementById('sphere-container');
+
+		camera = new THREE.PerspectiveCamera(60, w / h, 1, 2000);
+		camera.position.z = 500;
+
+		scene = new THREE.Scene();
+
+		group = new THREE.Group();
+		scene.add(group);
+
+		// earth
+
+		var loader = new THREE.TextureLoader();
+		loader.load(imgSrc, function (texture) {
+
+			var geometry = new THREE.SphereGeometry(200, 20, 20);
+
+			var material = new THREE.MeshBasicMaterial({ map: texture, overdraw: 0.5 });
+			var mesh = new THREE.Mesh(geometry, material);
+			group.add(mesh);
+		});
+
+		// shadow
+
+		var canvas = document.createElement('canvas');
+		canvas.width = 128;
+		canvas.height = 128;
+
+		var context = canvas.getContext('2d');
+		var gradient = context.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2);
+		gradient.addColorStop(0.1, 'rgba(210,210,210,1)');
+		gradient.addColorStop(1, 'rgba(255,255,255,1)');
+
+		context.fillStyle = gradient;
+		context.fillRect(0, 0, canvas.width, canvas.height);
+
+		var texture = new THREE.CanvasTexture(canvas);
+
+		var geometry = new THREE.PlaneBufferGeometry(300, 300, 3, 3);
+		var material = new THREE.MeshBasicMaterial({ map: texture, overdraw: 0.5 });
+
+		var mesh = new THREE.Mesh(geometry, material);
+		mesh.position.y = -250;
+		mesh.rotation.x = -Math.PI / 2;
+		group.add(mesh);
+
+		renderer = new THREE.CanvasRenderer();
+		renderer.setClearColor(0xffffff);
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setSize(w, h);
+		container.appendChild(renderer.domElement);
+
+		document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+		//
+
+		window.addEventListener('resize', function (e) {
+			onWindowResize(e, w, h);
+		}, false);
+	}
+
+	function onWindowResize(e, w, h) {
+
+		windowHalfX = w / 2;
+		windowHalfY = h / 2;
+
+		camera.aspect = w / h;
+		camera.updateProjectionMatrix();
+
+		renderer.setSize(w, h);
+	}
+
+	function onDocumentMouseMove(event) {
+		if (event.clientX >= container.offsetLeft && event.clientX <= container.offsetLeft + 200 && event.clientY >= 0 && event.clientY <= 100) {
+			mouseX = event.clientX - windowHalfX;
+			mouseY = event.clientY - windowHalfY;
+		}
+	}
+
+	//
+
+	function animate() {
+
+		requestAnimationFrame(animate);
+
+		render();
+	}
+
+	function render() {
+
+		camera.position.x += (mouseX - camera.position.x) * 1;
+		camera.position.y += (-mouseY - camera.position.y) * 1;
+
+		camera.lookAt(scene.position);
+
+		group.rotation.y -= 0.005;
+
+		renderer.render(scene, camera);
+	}
+
+	module.exports = {
+		init: init,
+		animate: animate
+	};
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var init = function init(module) {
+		module.controller('navigatorController', ['$scope', function ($scope) {}]);
+	};
+
+	module.exports = {
+		init: init
+	};
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var init = function init(module) {
+		module.controller('loginController', ['$scope', '$http', function ($scope, $http) {
+			$scope.login = function () {
+				$http({
+					url: '/login',
+					method: 'POST',
+					data: {
+						username: $scope.username,
+						password: $scope.password
+					}
+				}).then(function (res) {
+					if (res.data.errno == 0) {
+						$scope.loginTip = "登录成功";
+						setTimeout(function () {
+							location.reload();
+						}, 1000);
+					} else {
+						$scope.loginTip = "用户名或密码错误";
+					}
+				}, function (res) {});
+			};
+
+			$scope.logout = function () {
+				window.location = "/logout";
+			};
+
+			$scope.toggleLoginForm = function () {
+				$scope.loginForm = !$scope.loginForm;
+				$scope.loginTip = "";
+			};
+
+			$scope.toggleLogoutForm = function () {
+				$scope.logoutForm = !$scope.logoutForm;
+			};
+		}]);
+	};
+
+	module.exports = {
+		init: init
+	};
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(15);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(true) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept(15, function() {
+				var newContent = __webpack_require__(15);
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(9)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "#article-list-container a:link,\n#article-list-container a:visited,\n#article-list-container a:hover,\n#article-list-container a:active {\n  text-decoration: none;\n}\n#article-list-container .post-lists {\n  width: 900px;\n  position: relative;\n  margin: auto;\n}\n#article-list-container .post-lists .post-list {\n  margin: 0;\n  padding: 0;\n  margin-top: 20px;\n}\n#article-list-container .post-lists .post-list li {\n  background: #fff;\n  list-style: none;\n  float: left;\n  margin: -3px 0 40px 14px;\n  padding-bottom: 19px;\n  width: 280px;\n  border: 3px solid #dfdfdf;\n  background: #ffffff;\n}\n#article-list-container .post-lists .post-list li .bnwrap {\n  width: 100%;\n  height: 150px;\n  overflow: hidden;\n}\n#article-list-container .post-lists .post-list li p {\n  font-size: 14px;\n  line-height: 30px;\n  color: #5a5a5a;\n  margin: 5px 0;\n  padding: 0 10px;\n  text-overflow: ellipsis;\n  width: 80%;\n  white-space: nowrap;\n  overflow: hidden;\n}\n#article-list-container .post-lists .post-list li .date {\n  font-size: 10px;\n  color: #999999;\n  padding: 0 10px;\n}\n#article-list-container .post-lists .post-list li:hover {\n  border: 3px #fd6b00 solid;\n}\n#article-list-container .post-lists .post-list li:hover p {\n  color: #fd6b00;\n}\n.clearfix:before,\n.clearfix:after {\n  display: table;\n  content: \"\";\n}\n.clearfix:after {\n  clear: both;\n}\nbody {\n  margin: 0;\n  padding: 0;\n  background: #f8f8f8;\n}\n.ng-cloak {\n  display: none;\n}\n.hide {\n  display: none;\n}\n.triangle-down {\n  display: inline-block;\n  width: 0;\n  height: 0;\n  text-indent: -99999px;\n  vertical-align: top;\n  border-left: 4px solid transparent;\n  border-right: 4px solid transparent;\n  border-top: 4px solid #000;\n  filter: alpha(opacity=30);\n  content: \"\\2193\";\n  margin-top: 8px;\n  opacity: 1;\n}\n#top-bar-background {\n  background: #fff;\n  height: 100px;\n  width: 100%;\n  position: absolute;\n  top: 0;\n  box-shadow: 0px 2px 3px #888888;\n  z-index: -1;\n}\n#top-bar {\n  background: #fff;\n  width: 920px;\n  poisition: relative;\n  margin: auto;\n}\n#top-bar #sphere-container {\n  height: 100px;\n  float: left;\n}\n#top-bar .logo {\n  height: 100px;\n  float: left;\n}\n#top-bar .logo img {\n  height: 60px;\n  margin-top: 25px;\n  margin-left: 10px;\n}\n#top-bar .navigator {\n  float: left;\n  height: 100px;\n  line-height: 100px;\n  margin-left: 200px;\n  position: relative;\n  z-index: 100;\n}\n#top-bar .navigator ul {\n  position: relative;\n  z-index: 100;\n  height: 100px;\n  margin: 0;\n  padding: 0;\n}\n#top-bar .navigator ul a {\n  text-align: center;\n  width: 60px;\n  height: 80px;\n  padding-top: 20px;\n  display: inline-block;\n  color: #606566;\n  font-size: 14px;\n  padding-left: 20px;\n  padding-right: 20px;\n  text-decoration: none;\n}\n#top-bar .navigator ul a:hover {\n  color: #18309a !important;\n  text-decoration: none;\n}\n#top-bar .navigator .nav-highlight {\n  height: 100px;\n  width: 100px;\n  background: #f8f8f8;\n  border-bottom: 5px #18309a solid;\n  position: absolute;\n  top: 0;\n  left: 0;\n  z-index: 50;\n  -webkit-transition: left 0.3s ease;\n  transition: left 0.3s ease;\n}\n#top-bar .login {\n  z-index: 150;\n  position: relative;\n  float: right;\n}\n#top-bar .login .login-component .login-entry {\n  padding: 0 12px;\n  background: #b3b3b3;\n  text-decoration: none;\n  color: #fff;\n  line-height: 22px;\n  font-size: 10px;\n  position: relative;\n  top: 60px;\n  cursor: pointer;\n}\n#top-bar .login .login-component .login-wrapper {\n  position: absolute;\n  right: 0;\n  top: 85px;\n  width: 220px;\n  opacity: 0;\n  -webkit-transform: translateY(10px);\n          transform: translateY(10px);\n  -webkit-transition: opacity .2s ease,-webkit-transform .2s ease;\n  transition: opacity .2s ease,-webkit-transform .2s ease;\n  transition: transform .2s ease,opacity .2s ease;\n  transition: transform .2s ease,opacity .2s ease,-webkit-transform .2s ease;\n  -webkit-backface-visibility: hidden;\n          backface-visibility: hidden;\n  color: #fff;\n}\n#top-bar .login .login-component .login-wrapper .arrow-refer {\n  width: 0;\n  height: 0;\n  border-left: 5px solid transparent;\n  border-right: 5px solid transparent;\n  border-bottom: 6px solid #18309a;\n  position: relative;\n  right: 20px;\n  float: right;\n}\n#top-bar .login .login-component .login-wrapper .login-form {\n  background-color: #18309a;\n  position: relative;\n  top: 6px;\n  padding-left: 18px;\n  padding-bottom: 20px;\n}\n#top-bar .login .login-component .login-wrapper .login-form .col-name,\n#top-bar .login .login-component .login-wrapper .login-form .col-pwd {\n  padding-left: 8px;\n  margin: 0;\n  font-size: 12px;\n}\n#top-bar .login .login-component .login-wrapper .login-form .col-name input,\n#top-bar .login .login-component .login-wrapper .login-form .col-pwd input {\n  width: 125px;\n  height: 14px;\n  padding: 4px 5px;\n  margin-left: 13px;\n  outline: 0;\n  border: 0;\n  background: #fff;\n  line-height: 14px;\n  box-sizing: content-box;\n  vertical-align: middle;\n}\n#top-bar .login .login-component .login-wrapper .login-form .col-name {\n  padding-top: 20px;\n}\n#top-bar .login .login-component .login-wrapper .login-form .col-pwd {\n  padding-top: 18px;\n}\n#top-bar .login .login-component .login-wrapper .login-form .col-tip {\n  margin: 0;\n  font-size: 12px;\n  color: #fff;\n  position: absolute;\n  top: 94px;\n  left: 71px;\n}\n#top-bar .login .login-component .login-wrapper .login-form .col-submit {\n  margin: 0;\n  padding-left: 50px;\n  padding-top: 31px;\n}\n#top-bar .login .login-component .login-wrapper .login-form .col-submit .btn-submit {\n  width: 52px;\n  height: 23px;\n  color: #999;\n  padding: 0;\n  cursor: pointer;\n  background-color: #fff;\n  border: 1px solid #000;\n  box-sizing: content-box;\n  font-size: 12px;\n}\n#top-bar .login .logout-component {\n  position: relative;\n  top: 45px;\n  left: 70px;\n}\n#top-bar .login .logout-component a {\n  color: #606566;\n  font-size: 12px;\n}\n#top-bar .login .logout-component .triangle-down {\n  float: right;\n  position: relative;\n  top: 15px;\n  right: 45px;\n}\n#top-bar .login .logout-component .user-info {\n  float: right;\n  position: relative;\n  top: 20px;\n  right: 50px;\n}\n#top-bar .login .logout-component .logout-wrapper {\n  position: absolute;\n  right: 35px;\n  top: 45px;\n  opacity: 0;\n  -webkit-transform: translateY(10px);\n          transform: translateY(10px);\n  -webkit-transition: opacity .2s ease,-webkit-transform .2s ease;\n  transition: opacity .2s ease,-webkit-transform .2s ease;\n  transition: transform .2s ease,opacity .2s ease;\n  transition: transform .2s ease,opacity .2s ease,-webkit-transform .2s ease;\n  -webkit-backface-visibility: hidden;\n          backface-visibility: hidden;\n}\n#top-bar .login .logout-component .logout-wrapper .arrow-refer {\n  width: 0;\n  height: 0;\n  border-left: 5px solid transparent;\n  border-right: 5px solid transparent;\n  border-bottom: 6px solid #15287b;\n  position: relative;\n  right: 20px;\n  float: right;\n}\n#top-bar .login .logout-component .logout-wrapper .logout-block {\n  background: #15287b;\n  font-size: 12px;\n  color: #fff;\n  text-align: center;\n  width: 100px;\n  height: 25px;\n  line-height: 25px;\n  position: relative;\n  top: 6px;\n  cursor: pointer;\n}\n#top-bar .create-article-button {\n  position: absolute;\n  right: -60px;\n  top: 10px;\n  background: #18309a;\n  color: #fff;\n  padding: 10px;\n  font-size: 12px;\n}\n#top-bar .show {\n  display: block!important;\n  opacity: 1!important;\n  -webkit-transform: translateY(0) !important;\n          transform: translateY(0) !important;\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _articleService = __webpack_require__(17);
+
+	var _articleService2 = _interopRequireDefault(_articleService);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var init = function init(module) {
+		module.controller('articleController', ['$scope', '$http', "articleService", function ($scope, $http, articleService) {
+			articleService.getArticleList().then(function (res) {
+				$scope.articleList = res.data.data;
+			});
+		}]);
+	};
+
+	module.exports = {
+		init: init
+	};
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var init = function init(module) {
+		module.service("articleService", ['$http', function ($http) {
+			this.getArticleList = function () {
+				return $http({
+					method: "GET",
+					url: "/getAllArticles"
+				}).then(function (res) {
+					return res;
+				});
+			};
+		}]);
+	};
+
+	module.exports = {
+		init: init
+	};
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var init = function init(module) {
+
+		module.directive("articlecard", function () {
+			return {
+				restrict: 'EA',
+				replace: true,
+				transclude: true,
+				scope: {
+					articleData: "=articleData"
+				},
+				//template : '<div class="helloworld">{{title}}<div ng-transclude></div></div>'
+				template: '<li>' + '<a href="/articleDetail/{{articleData.id}}">' + '<div class="bnwrap">' + '<img src="{{articleData.cover_image}}" onerror="this.src=\'\'">' + '</div>' + '<p>{{articleData.title}}</p>' + '<span class="date">{{articleData.user.username}} 发布于 {{articleData.createdAt.substring(0, articleData.createdAt.indexOf("T"))}}</span>' + '</a>' + '</li>'
+			};
+		});
+	};
+
+	module.exports = {
+		init: init
+	};
 
 /***/ }
 ]);

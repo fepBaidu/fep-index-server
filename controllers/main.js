@@ -8,3 +8,4 @@ function build(name, value){
  
 build('index', require('./index'));
 build('article', require('./article'));
+build('aboutus', require('./aboutus'));
