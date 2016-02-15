@@ -3,7 +3,8 @@ var sequelize = new Sequelize('fep', 'root', '', {host : '127.0.0.1', port : '33
 
 var User = sequelize.define('user', {
 	username: Sequelize.STRING,
-	password: Sequelize.STRING
+	password: Sequelize.STRING,
+	nickname: Sequelize.STRING
 });
 
 module.exports = User;
