@@ -10,4 +10,8 @@ exports.create = function(req, res) {
 
 exports.detail = function(req, res) {
 	session.login('./build/articleDetail', {movePosition : 1, articleId : req.params.article_id}, req, res);
+};
+
+exports.edit = function(req, res) {
+	session.login('./build/editArticle', {movePosition : 1, articleId : req.params.article_id}, req, res);	
 }

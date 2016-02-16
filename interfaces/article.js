@@ -44,3 +44,24 @@ exports.deploy = function(req, res) {
 	});
 }
 
+exports.save = function(req, res) {
+	articleService.save(req.body.id, req.body.title, req.body.content, req.session.user_id, req.body.tag, req.body.cover_image).then(function(result){
+		if(result) {
+			res.json(responseData('success', {}, {}));
+		}
+		else {
+			res.json(responseData('failed', {}, {}));	
+		}
+	});	
+}
+
+exports.delete = function(req, res) {
+	articleService.delete(req.body.id).then(function(result) {
+		if(result) {
+			res.json(responseData('success', {}, {}));
+		}
+		else {
+			res.json(responseData('failed', {}, {}));
+		}
+	});
+}

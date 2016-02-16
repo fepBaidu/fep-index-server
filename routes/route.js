@@ -23,6 +23,12 @@ exports.routes = [
 	},
 
 	{
+		path : '/editArticle/:article_id',
+		type : 'get',
+		method : controllers.article.edit
+	},
+
+	{
 		path : '/articleDetail/:article_id',
 		type : 'get',
 		method : controllers.article.detail
@@ -66,6 +72,20 @@ exports.routes = [
 		type : 'post',
 		filter : [bodyParser.json(), bodyParser.urlencoded({ extended: true })],
 		method : interfaces.article.deploy
+	},
+
+	{
+		path : "/save",
+		type : 'post',
+		filter : [bodyParser.json(), bodyParser.urlencoded({ extended: true })],
+		method : interfaces.article.save
+	},
+
+	{
+		path : '/delete',
+		type : 'post',
+		filter : [bodyParser.json(), bodyParser.urlencoded({ extended: true })],
+		method : interfaces.article.delete
 	},
 
 	{
